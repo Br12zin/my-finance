@@ -26,7 +26,7 @@ const schema = z.object({
   .string()
   .max(50, { message: "Endereço é obrigatório e deve ter até 50 caracteres" })
   .regex(/^[A-Za-zÀ-ú\s]+$/, { message: "Endereço deve conter apenas letras e espaços" }),
-
+  complemento: z.string().optional(),
 
   banco: z.string().min(1, { message: "Banco é obrigatório" }),
   agencia: z.string().length(4, { message: "Agência deve ter exatamente 4 dígitos" }),
@@ -54,7 +54,7 @@ export default function ClientFinance() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-8 bg-white shadow-lg rounded-xl mt-2">
+    <div className="max-w-3xl mx-auto p-8 bg-gray-200 shadow-lg rounded-xl mt-2">
       <h2 className="text-3xl font-bold mb-8 text-center text-blue-900">Cadastro Bancário</h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -65,19 +65,19 @@ export default function ClientFinance() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="block text-md font-medium mb-1 text-black">Nome</label>
-              <input {...register("name")} className="input-style border rounded-md border-black text-black" />
+              <input {...register("name")} className="input-style border rounded-md border-black text-black p-1" />
               {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
             </div>
 
             <div>
               <label className="block text-md font-medium mb-1 text-black">CPF</label>
-              <input {...register("cpf")} className="input-style border rounded-md border-black text-black" maxLength={11} />
+              <input {...register("cpf")} className="input-style border rounded-md border-black text-black p-1" maxLength={11} />
               {errors.cpf && <p className="text-red-500 text-sm">{errors.cpf.message}</p>}
             </div>
 
             <div>
               <label className="block text-md font-medium mb-1 text-black">RG</label>
-              <input {...register("rg")} className="input-style border rounded-md border-black text-black" maxLength={9} />
+              <input {...register("rg")} className="input-style border rounded-md border-black text-black p-1" maxLength={9} />
               {errors.rg && <p className="text-red-500 text-sm">{errors.rg.message}</p>}
             </div>
 
@@ -89,21 +89,29 @@ export default function ClientFinance() {
 
             <div>
               <label className="block text-md font-medium mb-1 text-black">Telefone</label>
-              <input {...register("telefone")} className="input-style border rounded-md border-black text-black" maxLength={11} />
+              <input {...register("telefone")} className="input-style border rounded-md border-black text-black p-1" maxLength={11} />
               {errors.telefone && <p className="text-red-500 text-sm">{errors.telefone.message}</p>}
             </div>
 
             <div>
               <label className="block text-md font-medium mb-1 text-black">Email</label>
-              <input type="email" {...register("email")} className="input-style border rounded-md border-black text-black " />
+              <input type="email" {...register("email")} className="input-style border rounded-md border-black text-black p-1" />
               {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
             </div>
+            
 
-            <div className="md:col-span-2">
-              <label className="block text-md font-medium mb-1 text-black">Endereço</label>
-              <input {...register("endereco")} className="input-style border rounded-md border-black" />
-              {errors.endereco && <p className="text-red-500 text-sm">{errors.endereco.message}</p>}
-            </div>
+            <div className="md:col-span-1">
+  <label className="block text-md font-medium mb-1 text-black">Endereço</label>
+  <input {...register("endereco")} className="input-style border rounded-md border-black p-1" />
+  {errors.endereco && <p className="text-red-500 text-sm">{errors.endereco.message}</p>}
+</div>
+<div className="md:col-span-1">
+  <label className="block text-md font-medium mb-1 text-black">Complemento</label>
+  <input {...register("complemento")} className="input-style border rounded-md border-black p-1" />
+  {errors.complemento && <p className="text-red-500 text-sm">{errors.complemento.message}</p>}
+</div>
+
+            
           </div>
         </fieldset>
 
@@ -114,17 +122,34 @@ export default function ClientFinance() {
 
           <div>
               <label className="block text-md font-medium mb-1 text-black">Agência</label>
-              <input {...register("agencia")} className="input-style border rounded-md text-black" maxLength={4} />
+              <input {...register("agencia")} className="input-style border rounded-md text-black p-1" maxLength={4} />
               {errors.agencia && <p className="text-red-500 text-sm">{errors.agencia.message}</p>}
             </div>
 
 
 
-            <div>
-              <label className="block text-md font-medium mb-1 text-black">Conta</label>
-              <input {...register("conta")} className="input-style border rounded-md text-black" maxLength={5} />
-              {errors.conta && <p className="text-red-500 text-sm">{errors.conta.message}</p>}
-            </div>
+           <div className="flex gap-4">
+  <div className="flex-1">
+    <label className="block text-md font-medium mb-1 text-black">Conta</label>
+    <input
+      {...register("conta")}
+      className="input-style border rounded-md text-black w-full p-1"
+      maxLength={5}
+    />
+    {errors.conta && <p className="text-red-500 text-sm">{errors.conta.message}</p>}
+  </div>
+
+  <div className="w-20">
+    <label className="block text-md font-medium mb-1 text-black">Dígito</label>
+    <input
+      {...register("digito_conta")}
+      className="input-style border rounded-md border-black text-black w-8 text-center p-1"
+      maxLength={1}
+    />
+    {errors.digito_conta && <p className="text-red-500 text-sm">{errors.digito_conta.message}</p>}
+  </div>
+</div>
+
 
             <div>
               <label className="block text-md font-medium mb-1 text-black">Banco</label>
@@ -138,12 +163,6 @@ export default function ClientFinance() {
               </select>
               {errors.banco && <p className="text-red-500 text-sm">{errors.banco.message}</p>}
             </div>
-
-            <div>
-              <label className="block text-md font-medium mb-1 text-black">Dígito da Conta</label>
-              <input {...register("digito_conta")} className="input-style border rounded-md border-black text-black" maxLength={1} />
-              {errors.digito_conta && <p className="text-red-500 text-sm">{errors.digito_conta.message}</p>}
-              </div>
 
             <div>
               <label className="block text-md font-size mb-1 text-black">Tipo de Conta</label>
