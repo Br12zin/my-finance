@@ -4,30 +4,21 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-
 const schema = z.object({
   name: z.string().min(1, { message: "Nome é obrigatório" }),
   cpf: z.string().length(11, { message: "CPF é obrigatório" }),
   rg: z.string().length(9, { message: "RG é obrigatório" }),
   data_nascimento: z
-  .string()
-  .refine((val) => /^\d{4}-\d{2}-\d{2}$/.test(val), {
-    message: "Data deve estar no formato AAAA-MM-DD",
-  })
-  .refine((val) => {
-    const date = new Date(val);
-    return date.getFullYear() > 1900 && date.getFullYear() <= new Date().getFullYear();
-  }, {
-    message: "Data de nascimento inválida",
-  }),
+    .coerce.date()
+    .min(new Date("1900-01-01"), { message: "Data de nascimento inválida" })
+    .max(new Date(), { message: "Data de nascimento inválida" }),
   telefone: z.string().min(11, { message: "Telefone é obrigatório" }),
   email: z.string().email({ message: "Email inválido" }),
   endereco: z
-  .string()
-  .max(50, { message: "Endereço é obrigatório e deve ter até 50 caracteres" })
-  .regex(/^[A-Za-zÀ-ú\s]+$/, { message: "Endereço deve conter apenas letras e espaços" }),
+    .string()
+    .max(50, { message: "Endereço é obrigatório e deve ter até 50 caracteres" })
+    .regex(/^[A-Za-zÀ-ú\s]+$/, { message: "Endereço deve conter apenas letras e espaços" }),
   complemento: z.string().optional(),
-
   banco: z.string().min(1, { message: "Banco é obrigatório" }),
   agencia: z.string().length(4, { message: "Agência deve ter exatamente 4 dígitos" }),
   conta: z.string().length(5, { message: "Conta não encontrada" }),
@@ -54,134 +45,302 @@ export default function ClientFinance() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-8 bg-gray-200 shadow-lg rounded-xl mt-2">
-      <h2 className="text-3xl font-bold mb-8 text-center text-blue-900">Cadastro Bancário</h2>
+    <div className="max-w-3xl mx-auto p-10 bg-[#121212] rounded-xl shadow-lg mt-6 font-sans text-white  ">
+      <h2 className="text-4xl font-extrabold mb-10 text-center gradient-gold-shine" style={{ color: "#c7a643" }}>
+        Cadastro Bancário
+      </h2>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        {/* Dados Pessoais */}
+        <fieldset className="border border-[#bfa14a] p-8 rounded-lg">
+          <legend
+            className="text-2xl font-semibold mb-6"
+            style={{ color: "#bfa14a" }}
+          >
+            Dados Pessoais
+          </legend>
 
-        {/* DADOS PESSOAIS */}
-        <fieldset className="border border-black p-6 rounded-lg">
-          <legend className="text-xl font-bold text-gray-700 mb-4">Dados Pessoais</legend>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Nome */}
             <div>
-              <label className="block text-md font-medium mb-1 text-black">Nome</label>
-              <input {...register("name")} className="input-style border rounded-md border-black text-black p-1" />
-              {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+              <label className="block mb-2 font-medium" htmlFor="name">
+                Nome
+              </label>
+              <input
+                {...register("name")}
+                id="name"
+                className={`w-full rounded-md bg-[#1e1e1e] border border-[#bfa14a] px-3 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#bfa14a]`}
+                placeholder="Seu nome completo"
+              />
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+              )}
             </div>
 
+            {/* CPF */}
             <div>
-              <label className="block text-md font-medium mb-1 text-black">CPF</label>
-              <input {...register("cpf")} className="input-style border rounded-md border-black text-black p-1" maxLength={11} />
-              {errors.cpf && <p className="text-red-500 text-sm">{errors.cpf.message}</p>}
+              <label className="block mb-2 font-medium" htmlFor="cpf">
+                CPF
+              </label>
+              <input
+                {...register("cpf")}
+                id="cpf"
+                maxLength={11}
+                className={`w-full rounded-md bg-[#1e1e1e] border border-[#bfa14a] px-3 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#bfa14a]`}
+                placeholder="Apenas números"
+              />
+              {errors.cpf && (
+                <p className="mt-1 text-sm text-red-500">{errors.cpf.message}</p>
+              )}
             </div>
 
+            {/* RG */}
             <div>
-              <label className="block text-md font-medium mb-1 text-black">RG</label>
-              <input {...register("rg")} className="input-style border rounded-md border-black text-black p-1" maxLength={9} />
-              {errors.rg && <p className="text-red-500 text-sm">{errors.rg.message}</p>}
+              <label className="block mb-2 font-medium" htmlFor="rg">
+                RG
+              </label>
+              <input
+                {...register("rg")}
+                id="rg"
+                maxLength={9}
+                className={`w-full rounded-md bg-[#1e1e1e] border border-[#bfa14a] px-3 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#bfa14a]`}
+                placeholder="Apenas números"
+              />
+              {errors.rg && (
+                <p className="mt-1 text-sm text-red-500">{errors.rg.message}</p>
+              )}
             </div>
 
+            {/* Data de Nascimento */}
             <div>
-              <label className="block text-md font-medium mb-1 text-black">Data de Nascimento</label>
-              <input type="date" {...register("data_nascimento")} className="input-style rounded-md border-black text-black" />
-              {errors.data_nascimento && <p className="text-red-500 text-sm">{errors.data_nascimento.message}</p>}
+              <label className="block mb-2 font-medium" htmlFor="data_nascimento">
+                Data de Nascimento
+              </label>
+              <input
+                type="date"
+                {...register("data_nascimento")}
+                id="data_nascimento"
+                className={`w-full rounded-md bg-[#1e1e1e] border border-[#bfa14a] px-3 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#bfa14a]`}
+              />
+              {errors.data_nascimento && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.data_nascimento.message}
+                </p>
+              )}
             </div>
 
+            {/* Telefone */}
             <div>
-              <label className="block text-md font-medium mb-1 text-black">Telefone</label>
-              <input {...register("telefone")} className="input-style border rounded-md border-black text-black p-1" maxLength={11} />
-              {errors.telefone && <p className="text-red-500 text-sm">{errors.telefone.message}</p>}
+              <label className="block mb-2 font-medium" htmlFor="telefone">
+                Telefone
+              </label>
+              <input
+                {...register("telefone")}
+                id="telefone"
+                maxLength={11}
+                className={`w-full rounded-md bg-[#1e1e1e] border border-[#bfa14a] px-3 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#bfa14a]`}
+                placeholder="Número com DDD"
+              />
+              {errors.telefone && (
+                <p className="mt-1 text-sm text-red-500">{errors.telefone.message}</p>
+              )}
             </div>
 
+            {/* Email */}
             <div>
-              <label className="block text-md font-medium mb-1 text-black">Email</label>
-              <input type="email" {...register("email")} className="input-style border rounded-md border-black text-black p-1" />
-              {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+              <label className="block mb-2 font-medium" htmlFor="email">
+                Email
+              </label>
+              <input
+                type="email"
+                {...register("email")}
+                id="email"
+                className={`w-full rounded-md bg-[#1e1e1e] border border-[#bfa14a] px-3 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#bfa14a]`}
+                placeholder="exemplo@dominio.com"
+              />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
+              )}
             </div>
-            
 
+            {/* Endereço */}
             <div className="md:col-span-1">
-  <label className="block text-md font-medium mb-1 text-black">Endereço</label>
-  <input {...register("endereco")} className="input-style border rounded-md border-black p-1" />
-  {errors.endereco && <p className="text-red-500 text-sm">{errors.endereco.message}</p>}
-</div>
-<div className="md:col-span-1">
-  <label className="block text-md font-medium mb-1 text-black">Complemento</label>
-  <input {...register("complemento")} className="input-style border rounded-md border-black p-1" />
-  {errors.complemento && <p className="text-red-500 text-sm">{errors.complemento.message}</p>}
-</div>
+              <label className="block mb-2 font-medium" htmlFor="endereco">
+                Endereço
+              </label>
+              <input
+                {...register("endereco")}
+                id="endereco"
+                className={`w-full rounded-md bg-[#1e1e1e] border border-[#bfa14a] px-3 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#bfa14a]`}
+                placeholder="Rua, número, bairro"
+              />
+              {errors.endereco && (
+                <p className="mt-1 text-sm text-red-500">{errors.endereco.message}</p>
+              )}
+            </div>
 
-            
+            {/* Complemento */}
+            <div className="md:col-span-1">
+              <label className="block mb-2 font-medium" htmlFor="complemento">
+                Complemento
+              </label>
+              <input
+                {...register("complemento")}
+                id="complemento"
+                className={`w-full rounded-md bg-[#1e1e1e] border border-[#bfa14a] px-3 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#bfa14a]`}
+                placeholder="Apto, bloco, etc (opcional)"
+              />
+            </div>
           </div>
         </fieldset>
 
-        {/* DADOS BANCÁRIOS */}
-        <fieldset className="border border-black p-6 rounded-lg">
-          <legend className="text-xl font-bold text-gray-700 mb-4">Dados Bancários</legend>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Dados Bancários */}
+        <fieldset className="border border-[#bfa14a] p-8 rounded-lg">
+          <legend
+            className="text-2xl font-semibold mb-6"
+            style={{ color: "#bfa14a" }}
+          >
+            Dados Bancários
+          </legend>
 
-          <div>
-              <label className="block text-md font-medium mb-1 text-black">Agência</label>
-              <input {...register("agencia")} className="input-style border rounded-md text-black p-1" maxLength={4} />
-              {errors.agencia && <p className="text-red-500 text-sm">{errors.agencia.message}</p>}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Agência */}
+            <div>
+              <label className="block mb-2 font-medium" htmlFor="agencia">
+                Agência
+              </label>
+              <input
+                {...register("agencia")}
+                id="agencia"
+                maxLength={4}
+                className={`w-full rounded-md bg-[#1e1e1e] border border-[#bfa14a] px-3 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#bfa14a]`}
+                placeholder="0000"
+              />
+              {errors.agencia && (
+                <p className="mt-1 text-sm text-red-500">{errors.agencia.message}</p>
+              )}
             </div>
 
+            {/* Conta e Dígito */}
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="block mb-2 font-medium" htmlFor="conta">
+                  Conta
+                </label>
+                <input
+                  {...register("conta")}
+                  id="conta"
+                  maxLength={5}
+                  className={`w-full rounded-md bg-[#1e1e1e] border border-[#bfa14a] px-3 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#bfa14a]`}
+                  placeholder="00000"
+                />
+                {errors.conta && (
+                  <p className="mt-1 text-sm text-red-500">{errors.conta.message}</p>
+                )}
+              </div>
 
-
-           <div className="flex gap-4">
-  <div className="flex-1">
-    <label className="block text-md font-medium mb-1 text-black">Conta</label>
-    <input
-      {...register("conta")}
-      className="input-style border rounded-md text-black w-full p-1"
-      maxLength={5}
-    />
-    {errors.conta && <p className="text-red-500 text-sm">{errors.conta.message}</p>}
-  </div>
-
-  <div className="w-20">
-    <label className="block text-md font-medium mb-1 text-black">Dígito</label>
-    <input
-      {...register("digito_conta")}
-      className="input-style border rounded-md border-black text-black w-8 text-center p-1"
-      maxLength={1}
-    />
-    {errors.digito_conta && <p className="text-red-500 text-sm">{errors.digito_conta.message}</p>}
-  </div>
-</div>
-
-
-            <div>
-              <label className="block text-md font-medium mb-1 text-black">Banco</label>
-              <select {...register("banco")} className="input-style border rounded-md text-gray-700">
-                <option value="">Selecione</option>
-                <option value="Banco do Brasil" className="text-black">Banco do Brasil</option>
-                <option value="Bradesco" className="text-black">Bradesco</option>
-                <option value="Caixa" className="text-black">Caixa</option>
-                <option value="Itaú" className="text-black">Itaú</option>
-                <option value="Nubank" className="text-black">Nubank</option>
-              </select>
-              {errors.banco && <p className="text-red-500 text-sm">{errors.banco.message}</p>}
+              <div className="w-20">
+                <label className="block mb-2 font-medium" htmlFor="digito_conta">
+                  Dígito
+                </label>
+                <input
+                  {...register("digito_conta")}
+                  id="digito_conta"
+                  maxLength={1}
+                  className={`w-full rounded-md bg-[#1e1e1e] border border-[#bfa14a] px-3 py-2 text-center text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#bfa14a]`}
+                  placeholder="0"
+                />
+                {errors.digito_conta && (
+                  <p className="mt-1 text-sm text-red-500">{errors.digito_conta.message}</p>
+                )}
+              </div>
             </div>
 
+            {/* Banco */}
             <div>
-              <label className="block text-md font-size mb-1 text-black">Tipo de Conta</label>
-              <select {...register("tipo_conta")} className="input-style border border-black text-gray-700 rounded-md">
-                <option value="">Selecione</option>
-                <option value="corrente" className="text-black">Conta Corrente</option>
-                <option value="poupança" className="text-black">Conta Poupança</option>
+              <label className="block mb-2 font-medium" htmlFor="banco">
+                Banco
+              </label>
+              <select
+                {...register("banco")}
+                id="banco"
+                className={`w-full rounded-md bg-[#1e1e1e] border border-[#bfa14a] px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#bfa14a]`}
+                defaultValue=""
+              >
+                <option value="" className="text-gray-400">
+                  Selecione
+                </option>
+                <option value="Banco do Brasil" className="text-white">
+                  Banco do Brasil
+                </option>
+                <option value="Bradesco" className="text-white">
+                  Bradesco
+                </option>
+                <option value="Caixa" className="text-white">
+                  Caixa
+                </option>
+                <option value="Itaú" className="text-white">
+                  Itaú
+                </option>
+                <option value="Nubank" className="text-white">
+                  Nubank
+                </option>
               </select>
-              {errors.tipo_conta && <p className="text-red-500 text-sm">{errors.tipo_conta.message}</p>}
+              {errors.banco && (
+                <p className="mt-1 text-sm text-red-500">{errors.banco.message}</p>
+              )}
+            </div>
+
+            {/* Tipo de Conta */}
+            <div>
+              <label className="block mb-2 font-medium" htmlFor="tipo_conta">
+                Tipo de Conta
+              </label>
+              <select
+                {...register("tipo_conta")}
+                id="tipo_conta"
+                className={`w-full rounded-md bg-[#1e1e1e] border border-[#bfa14a] px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#bfa14a]`}
+                defaultValue=""
+              >
+                <option value="" className="text-gray-400">
+                  Selecione
+                </option>
+                <option value="corrente" className="text-white">
+                  Conta Corrente
+                </option>
+                <option value="poupança" className="text-white">
+                  Conta Poupança
+                </option>
+              </select>
+              {errors.tipo_conta && (
+                <p className="mt-1 text-sm text-red-500">{errors.tipo_conta.message}</p>
+              )}
             </div>
           </div>
         </fieldset>
 
         <button
-          type="submit"
-          className="w-full bg-blue-800 hover:bg-blue-900 transition-all text-white font-semibold py-3 px-6 rounded-lg shadow-md"
-        >
-          Enviar Cadastro
-        </button>
+  type="submit"
+  className="w-full py-3 mt-6 rounded-lg font-semibold shadow-lg text-black"
+  style={{
+    background:
+      "linear-gradient(90deg, #bfa14a 0%, #f0d667 50%, #bfa14a 100%)",
+    boxShadow:
+      "0 0 8px 2px rgba(191, 161, 74, 0.5), inset 0 0 6px 1px rgba(255, 223, 90, 0.6)",
+    transition: "background 0.3s ease",
+  }}
+  onMouseEnter={(e) =>
+    (e.currentTarget.style.background =
+      "linear-gradient(90deg, #ac9945 0%, #bfa14a 50%, #f0d667 100%)")
+  }
+  onMouseLeave={(e) =>
+    (e.currentTarget.style.background =
+      "linear-gradient(90deg, #bfa14a 0%, #cfb958 50%, #bfa14a 100%)")
+  }
+>
+  Enviar Cadastro
+</button>
+
       </form>
     </div>
   );

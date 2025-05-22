@@ -26,6 +26,38 @@ body {
 }
 
 
+@keyframes goldShine {
+  0% {
+    background-position: 100% center;
+  }
+  50% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 100% center;
+  }
+}
 
+.gradient-gold-shine {
+  background: linear-gradient(
+    90deg,
+    #bfa14a 20%,
+    #f7e65e 40%,
+    #f0d667 50%,
+    #f7e65e 60%,
+    #bfa14a 80%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: goldShine 3s ease-in-out infinite;
+  font-weight: 800;
+  font-size: 2.5rem;
+  user-select: none;
+  letter-spacing: 0.05em;
 
-
+  /* Brilho mais leve, só uma sombra leve e amarelada */
+  text-shadow:
+    0 0 10px rgba(138, 137, 68, 0.6);
+}
