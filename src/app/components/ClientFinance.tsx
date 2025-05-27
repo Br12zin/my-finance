@@ -17,46 +17,64 @@ const schema = z.object({
   endereco: z
     .string()
     .max(50, { message: "Endereço é obrigatório e deve ter até 50 caracteres" })
-    .regex(/^[A-Za-zÀ-ú\s]+$/, { message: "Endereço deve conter apenas letras e espaços" }),
+    .regex(/^[A-Za-zÀ-ú\s]+$/, { message: "Endereço deve conter apenas letras e espaços" }), 
+    // Regex (ou Expressão Regular) é uma sequência de caracteres que forma um padrão de busca, usado principalmente para encontrar, extrair ou manipular 
+    // texto de forma poderosa e flexível.
+
   complemento: z.string().optional(),
   banco: z.string().min(1, { message: "Banco é obrigatório" }),
   agencia: z.string().length(4, { message: "Agência deve ter exatamente 4 dígitos" }),
   conta: z.string().length(5, { message: "Conta não encontrada" }),
-  digito_conta: z.string().length(1, { message: "Dígito da conta deve ter exatamente 1 dígito" }),
+  digito_conta: z.string().length(1, { message: "Dígito obrigatório" }),
   tipo_conta: z.enum(["corrente", "poupança"], { message: "Tipo de conta é obrigatório" }),
 });
 
 type IFormInput = z.infer<typeof schema>;
 
+// zodResolver converte as validações Zod para o formato que react-hook-form entende
 export default function ClientFinance() {
   const {
-    register,
-    handleSubmit,
+    register,  // register: Função que conecta cada input ao react-hook-form
+    handleSubmit, // handleSubmit: Função que lida com o envio do formulário
     formState: { errors },
     reset,
-  } = useForm<IFormInput>({
-    resolver: zodResolver(schema),
-  });
+  } = useForm<IFormInput>({ // useForm: Hook da biblioteca react-hook-form que gerencia todo o estado do formulário
+    // IFormInput: Tipo TypeScript derivado do schema Zod
+    resolver: zodResolver(schema), // resolver: zodResolver(schema): Integração com Zod para validação
+  }); // O schema é o objeto de validação Zod que você criou
 
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+  const onSubmit: SubmitHandler<IFormInput> = (data) => {  // Parâmetro data: Contém todos os valores do formulário já validados e tipados
+    // SubmitHandler<IFormInput>: Indica que é uma função que recebe dados no formato IFormInput
     console.log("Dados enviados: ", data);
     alert("Cadastro realizado com sucesso!");
     reset();
   };
 
+// Usuário preenche o formulário
+// Ao enviar, handleSubmit valida os dados usando o schema Zod
+// Se válido, chama onSubmit com os dados
+// Se inválido, preenche o objeto errors com as mensagens apropriadas
+// Após sucesso, limpa o formulário
+
   return (
-    <div className="max-w-3xl mx-auto p-10 bg-[#121212] rounded-xl shadow-lg mt-6 font-sans text-white  ">
-      <h2 className="text-4xl font-extrabold mb-10 text-center gradient-gold-shine" style={{ color: "#c7a643" }}>
+    <div suppressHydrationWarning className="max-w-3xl mx-auto p-10 bg-[#121212] rounded-xl shadow-lg mt-6 font-sans text-white  ">
+      <h2  className="text-4xl font-extrabold mb-10 text-center gradient-gold-shine" >
         Cadastro Bancário
       </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Dados Pessoais */}
         <fieldset className="border border-[#bfa14a] p-8 rounded-lg">
-          <legend
+          {/*<fieldset> É um elemento HTML usado para agrupar logicamente vários controles de formulário e rótulos */}
+          {/* Está sendo usado para os títulos "Dados Pessoais" e "Dados Bancários" */}
+
+          <legend suppressHydrationWarning
             className="text-2xl font-semibold mb-6"
             style={{ color: "#bfa14a" }}
           >
+             {/* <legend> */}
+            {/* Fornece um título/descrição para o grupo de campos definido pelo <fieldset> */}
+
             Dados Pessoais
           </legend>
 
@@ -197,8 +215,9 @@ export default function ClientFinance() {
         {/* Dados Bancários */}
         <fieldset className="border border-[#bfa14a] p-8 rounded-lg">
           <legend
-            className="text-2xl font-semibold mb-6"
-            style={{ color: "#bfa14a" }}
+          suppressHydrationWarning
+          className="text-2xl font-semibold mb-6"
+          style={{ color: "#bfa14a" }}
           >
             Dados Bancários
           </legend>
@@ -319,7 +338,7 @@ export default function ClientFinance() {
           </div>
         </fieldset>
 
-        <button
+        <button suppressHydrationWarning
   type="submit"
   className="w-full py-3 mt-6 rounded-lg font-semibold shadow-lg text-black"
   style={{
@@ -330,10 +349,16 @@ export default function ClientFinance() {
     transition: "background 0.3s ease",
   }}
   onMouseEnter={(e) =>
+    // O onMouseEnter é um evento em React que é disparado quando o ponteiro do mouse entra na área ocupada por um elemento ou por um de seus elementos filhos.
+    // Uso comum: Para efeitos de hover, tooltips, highlights interativos
+
     (e.currentTarget.style.background =
       "linear-gradient(90deg, #ac9945 0%, #bfa14a 50%, #f0d667 100%)")
   }
   onMouseLeave={(e) =>
+    // O onMouseLeave é um evento em React que é disparado quando o ponteiro do mouse sai da área ocupada por um elemento e todos os seus filhos.
+    // Uso comum: Para finalizar efeitos de hover, esconder tooltips, resetar estados
+
     (e.currentTarget.style.background =
       "linear-gradient(90deg, #bfa14a 0%, #cfb958 50%, #bfa14a 100%)")
   }
